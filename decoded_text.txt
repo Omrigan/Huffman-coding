@@ -1,0 +1,5 @@
+	Here is some "Text" that
+I'd like to be "escaped" for Java.
+I'll try a couple special characters here: \ "
+%^@#$%^&*()(*&^%$#$%^&*()\\\|||\"""""::;;;::]][[{{}{}[][]
+*****************************************************************
