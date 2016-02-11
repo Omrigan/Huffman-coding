@@ -28,18 +28,18 @@ public class Main {
         Scanner scan = new Scanner(new File(filenameIn));
         PrintWriter out = new PrintWriter(filenameTable);
         String s = "";
-        int[] freqs = new int[300];
         while (scan.hasNext()) {
             s += scan.nextLine() + "\n";
         }
+        HashMap<Character, Long> freqs = new HashMap<>();
         for (char c : s.toCharArray()) {
-            freqs[c]++;
+            if (!freqs.containsKey(c))
+                freqs.put(c, 0l);
+            freqs.put(c, freqs.get(c) + 1);
         }
         PriorityQueue<Node> queue = new PriorityQueue<>();
-        for (char i = 0; i < 300; i++) {
-            if (freqs[i] > 0) {
-                queue.add(new Node(freqs[i], i));
-            }
+        for (Map.Entry<Character, Long> pair : freqs.entrySet()) {
+            queue.add(new Node(pair.getValue().intValue(), pair.getKey()));
         }
         while (queue.size() > 1) {
             Node n1 = queue.poll();
@@ -52,8 +52,8 @@ public class Main {
         dfs(queue.poll(), new BitSeq());
         for (Map.Entry<Character, BitSeq> e : map.entrySet()) {
             Character key = e.getKey();
-            if(key=='\n')
-                key=1;
+            if (key == '\n')
+                key = 1;
             out.println(key.toString() + " " + e.getValue().toString());
         }
         out.close();
@@ -65,18 +65,18 @@ public class Main {
         while (tab.hasNext()) {
             String s = tab.nextLine();
             Character c = s.charAt(0);
-            if(c==1)
+            if (c == 1)
                 c = '\n';
             BitSeq b = new BitSeq(s.substring(2));
             Node cur = root;
             while (!b.deq.isEmpty()) {
                 boolean nxt = b.deq.pop();
-                if(nxt){
-                    if(cur.one==null)
+                if (nxt) {
+                    if (cur.one == null)
                         cur.one = new Node(0, (char) 0);
                     cur = cur.one;
-                } else{
-                    if(cur.zero==null)
+                } else {
+                    if (cur.zero == null)
                         cur.zero = new Node(0, (char) 0);
                     cur = cur.zero;
                 }
@@ -98,7 +98,7 @@ public class Main {
         for (char c : s.toCharArray()) {
             lastbyte = (lastbyte + table.get(c).size) % 8;
         }
-        out.write((8 - lastbyte)%8);
+        out.write((8 - lastbyte) % 8);
         ArrayDeque<Boolean> deq = new ArrayDeque<>();
         for (char c : s.toCharArray()) {
             for (Boolean b : table.get(c).deq)
@@ -150,14 +150,14 @@ public class Main {
 
             while (deq.size() > 320) {
                 Node cur = root;
-                while(cur.c==0){
+                while (cur.c == 0) {
                     boolean bool = deq.pop();
-                    if(bool)
+                    if (bool)
                         cur = cur.one;
                     else
                         cur = cur.zero;
                 }
-                s+=Character.toString(cur.c);
+                s += Character.toString(cur.c);
             }
 
         }
@@ -167,14 +167,14 @@ public class Main {
 
         while (deq.size() > 0) {
             Node cur = root;
-            while(deq.size() > 0 && cur.c==0){
+            while (deq.size() > 0 && cur.c == 0) {
                 boolean bool = deq.pop();
-                if(bool)
+                if (bool)
                     cur = cur.one;
                 else
                     cur = cur.zero;
             }
-            s+=Character.toString(cur.c);
+            s += Character.toString(cur.c);
         }
 
         out.print(s);
@@ -184,20 +184,38 @@ public class Main {
 
     public static void main(String[] argc) throws Exception {
         Main m = new Main();
-        if (argc.length == 0 || argc[0].equals("table"))
-            System.out.print("lol2");
-        else {
-            //m.readTable();
+        if (argc.length == 0 || argc[0].equals("table")) {
+            m.buildtable();
+        } else {
+
             if (argc[0].equals("encode")) {
+                if (argc.length >= 2)
+                    m.filenameIn = argc[1];
+                if (argc.length >= 3)
+                    m.filenameEncoded = argc[2];
+                File f = new File("table.txt");
                 m.buildtable();
                 m.readTable();
+
+
                 m.endcode();
+            } else if (argc[0].equals("decode")) {
+                if (argc.length >= 2)
+                    m.filenameEncoded = argc[1];
+                if (argc.length >= 3)
+                    m.filenameDeoded = argc[2];
+
+
+                File f = new File("table.txt");
+                m.buildtable();
+                m.readTable();
                 m.decode();
-            } else {
-                m.decode();
+
+
             }
         }
-        System.out.print("lol");
+
+        System.out.print("Done");
     }
 }
 
